@@ -1,0 +1,204 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import PageButtons from "../PageButtons";
+import ResourceLoader from "../../../lib/ResourceLoader";
+import CoinsMarket from "./CoinsMarket";
+import ExchangesMarket from "./ExchangesMarket";
+import CategoriesMarket from "./CategoriesMarket";
+import Link from "next/link";
+
+interface MarketProps {
+  isHomePage: boolean;
+}
+
+export default function Market({ isHomePage }: MarketProps) {
+  const [currentMarketSelection, setCurrentMarketSelection] =
+    useState("cryptocurrencies");
+  const [selectedPage, setSelectedPage] = useState<number>(1);
+  const [coins, setCoins] = useState<MarketCoin[]>([]);
+  const [exchanges, setExchanges] = useState<Exchange[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchData = async (page: number) => {
+      try {
+        if (currentMarketSelection === "cryptocurrencies") {
+          const data = await ResourceLoader(
+            `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${
+              isHomePage ? "10" : "100"
+            }&page=${page}`
+          );
+          setCoins(data);
+        } else if (currentMarketSelection === "exchanges") {
+          const data = await ResourceLoader(
+            `https://api.coingecko.com/api/v3/exchanges?vs_currency=usd&order=market_cap_desc&per_page=${
+              isHomePage ? "10" : "100"
+            }&page=${page}`
+          );
+          setExchanges(data);
+        } else if (currentMarketSelection === "categories") {
+          const data = await ResourceLoader(
+            `https://api.coingecko.com/api/v3/coins/categories?vs_currency=usd&order=market_cap_desc`
+          );
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch market data", error);
+      }
+    };
+
+    fetchData(selectedPage);
+  }, [selectedPage, currentMarketSelection, isHomePage]);
+
+  useEffect(() => {
+    setSelectedPage(1);
+  }, [currentMarketSelection]);
+
+  const updatecurrentMarketSelection = (selection: string) => {
+    setCurrentMarketSelection(selection);
+  };
+
+  const content = (
+    <>
+      {currentMarketSelection === "cryptocurrencies" ? (
+        <>
+          <CoinsMarket
+            coins={coins}
+            selectedPage={selectedPage}
+            pageItemCount={isHomePage ? 10 : 100}
+            isHomePage={isHomePage}
+          />
+        </>
+      ) : null}
+
+      {currentMarketSelection === "exchanges" ? (
+        <>
+          <ExchangesMarket
+            exchanges={exchanges}
+            selectedPage={selectedPage}
+            pageItemCount={isHomePage ? 10 : 100}
+            isHomePage={isHomePage}
+          />
+        </>
+      ) : null}
+
+      {currentMarketSelection === "categories" ? (
+        <>
+          <CategoriesMarket
+            categories={categories}
+            selectedPage={selectedPage}
+            pageItemCount={isHomePage ? 10 : 100}
+            isHomePage={isHomePage}
+          />
+        </>
+      ) : null}
+    </>
+  );
+
+  return (
+    <section
+      id="market"
+      className={`relative pt-16 pb-16 pl-4 pr-4 bg-secondary2 text-primary z-40 w-full ${
+        isHomePage ? "shadow-marketShadow" : null
+      }`}
+    >
+      <div
+        className={`mx-auto gap-16 ${
+          isHomePage ? "max-w-7xl" : "max-w-[1920px]"
+        } max-w-7xl flex flex-col`}
+      >
+        {isHomePage ? (
+          <>
+            <h1 className="font-bold text-4xl md:text-5xl leading-tight text-center">
+              Live Settlement Rates
+            </h1>
+          </>
+        ) : null}
+        <div
+          id="market-btns"
+          className="flex pageItemCount-center justify-center gap-6 md:gap-12 text-secondary"
+        >
+          <button
+            data-selection="cryptocurrencies"
+            onClick={(e) =>
+              updatecurrentMarketSelection(
+                e.currentTarget.dataset.selection ?? "cryptocurrencies"
+              )
+            }
+            className="relative"
+          >
+            Settlement Assets
+            <div
+              className={`absolute bottom-0 top-[34px] left-0 w-full h-1 bg-accent ${
+                currentMarketSelection === "cryptocurrencies"
+                  ? "opacity-100"
+                  : "opacity-0"
+              } transition-opacity duration-100`}
+            ></div>
+          </button>
+
+          <button
+            data-selection="exchanges"
+            onClick={(e) =>
+              updatecurrentMarketSelection(
+                e.currentTarget.dataset.selection ?? "exchanges"
+              )
+            }
+            className="relative"
+          >
+            Exchange Partners
+            <div
+              className={`absolute bottom-0 top-[34px] left-0 w-full h-1 bg-accent ${
+                currentMarketSelection === "exchanges"
+                  ? "opacity-100"
+                  : "opacity-0"
+              } transition-opacity duration-100`}
+            ></div>
+          </button>
+
+          <button
+            data-selection="categories"
+            onClick={(e) =>
+              updatecurrentMarketSelection(
+                e.currentTarget.dataset.selection ?? "categories"
+              )
+            }
+            className="relative"
+          >
+            Industry Verticals
+            <div
+              className={`absolute bottom-0 top-[34px] left-0 w-full h-1 bg-accent ${
+                currentMarketSelection === "categories"
+                  ? "opacity-100"
+                  : "opacity-0"
+              } transition-opacity duration-100`}
+            ></div>
+          </button>
+        </div>
+
+        <div id="crypto-list" className="flex flex-col gap-4 w-full">
+          {content}
+        </div>
+
+        {isHomePage ? (
+          <>
+            <Link
+              href="/cryptocurrencies"
+              className="primary-btn font-thin pl-6 pr-6 pt-4 pb-4 rounded-full self-center"
+            >
+              View Full Rate Board
+            </Link>
+          </>
+        ) : (
+          <PageButtons
+            selectedPage={selectedPage}
+            setSelectedPage={setSelectedPage}
+            currentMarketSelection={currentMarketSelection}
+            isHomePage={isHomePage}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
