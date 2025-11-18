@@ -117,7 +117,7 @@ export default function Market({ isHomePage }: MarketProps) {
         ) : null}
         <div
           id="market-btns"
-          className="flex pageItemCount-center justify-center gap-6 md:gap-12 text-secondary"
+          className="flex pageItemCount-center justify-center gap-6 md:gap-12 text-primary"
         >
           <button
             data-selection="cryptocurrencies"
