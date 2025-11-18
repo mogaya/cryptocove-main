@@ -53,7 +53,7 @@ export default function Hero() {
           <h1 className="font-[800] text-4xl md:text-5xl lg:text-7xl leading-tight md:leading-[4rem] lg:leading-[6rem]">
             Build A Borderless Checkout With Globpay
           </h1>
-          <p className="text-secondary text-base md:text-xl">
+          <p className="text-secondary2 text-base md:text-xl">
             Globpay&apos;s crypto gateway lets you accept USDT, USDC, BTC, and
             ETH in real time, automate conversions, and settle instantly in the
             currency your business needs.
