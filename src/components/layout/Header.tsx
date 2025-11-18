@@ -78,7 +78,7 @@ export default function Header() {
           </Link>
 
           <nav
-            className="hidden text-secondary lg:block space-x-8 text-xl"
+            className="hidden text-secondary2 lg:block space-x-8 text-xl"
             aria-label="main"
           >
             <Link href="/portfolio" className="text-sm relative group">
@@ -204,7 +204,7 @@ export default function Header() {
         }`}
       >
         <nav
-          className="flex flex-col gap-14 min-h-screen w-screen items-center py-16"
+          className="flex flex-col gap-14 min-h-screen w-screen items-center py-16 text-secondary2"
           aria-label="mobile"
         >
           <Link
